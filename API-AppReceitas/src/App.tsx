@@ -25,19 +25,19 @@ interface RecipeCardProps {
 function RecipeCard({ recipe, onCardClick }: RecipeCardProps) {
   return (
     <div className="recipe-card" onClick={() => onCardClick(recipe)}>
+      <span className={`recipe-difficulty-badge difficulty-${recipe.difficulty.toLowerCase()}`}>{recipe.difficulty}</span>
       <img src={recipe.image} alt={recipe.name} className="recipe-image" />
       <div className="recipe-content">
         <span className="recipe-type">{recipe.mealType.join(', ')}</span>
         <h3 className="recipe-name">{recipe.name}</h3>
         <div className="recipe-details">
-          <p><strong>Preparo:</strong> {recipe.prepTimeMinutes} min</p>
-          <p><strong>Cozimento:</strong> {recipe.cookTimeMinutes} min</p>
-          <p><strong>Porções:</strong> {recipe.servings}</p>
-          <p><strong>Kcal/porção:</strong> {recipe.caloriesPerServing}</p>
+          <span><strong>Preparo:</strong> {recipe.prepTimeMinutes} min</span>
+          <span><strong>Cozimento:</strong> {recipe.cookTimeMinutes} min</span>
+          <span><strong>Porções:</strong> {recipe.servings}</span>
+          <span><strong>Kcal/porção:</strong> {recipe.caloriesPerServing}</span>
         </div>
         <div className="recipe-footer">
-          <span><strong>Nota:</strong> {recipe.rating.toFixed(1)} ⭐</span>
-          <span><strong>Dificuldade:</strong> {recipe.difficulty}</span>
+          <span> {recipe.rating.toFixed(1)} ⭐</span>
         </div>
       </div>
     </div>

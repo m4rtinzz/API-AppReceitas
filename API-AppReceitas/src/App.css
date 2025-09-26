@@ -7,7 +7,7 @@
 
 .app-container h1 {
   text-align: center;
-  color: #F28599;
+  color: #D87581;
   margin-bottom: 2rem;
   font-size: 2.5rem;
 }
@@ -44,7 +44,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #F28599;
+  border-color: #D87581;
 }
 
 .sort-controls {
@@ -61,7 +61,7 @@
 }
 .sort-controls select:focus {
   outline: none;
-  border-color: #F28599;
+  border-color: #D87581;
 }
 
 .pagination {
@@ -126,13 +126,38 @@
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   display: flex;
   flex-direction: column;
+  position: relative;
   background-color: #fff;
 }
 
 .recipe-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border: 1.2px solid #F28599;
+  border: 1.2px solid #D87581;
+}
+
+.recipe-difficulty-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #6c757d;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.difficulty-easy {
+  background-color: #74b181d0;
+}
+.difficulty-medium {
+  background-color: #fccb39ce;
+}
+.difficulty-hard {
+  background-color: #e74c5bce;
 }
 
 .recipe-image {
@@ -164,13 +189,12 @@
 }
 
 .recipe-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
   font-size: 0.9rem;
   color: #555;
   margin-bottom: 12px;
-}
-
-.recipe-details p {
-  margin: 4px 0;
 }
 
 .recipe-footer {
@@ -236,7 +260,7 @@
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 2rem;
-  color: #F28599;
+  color: #D87581;
 }
 
 .modal-details-grid {
@@ -256,7 +280,7 @@
 .modal-section h3 {
   margin-bottom: 0.75rem;
   color: #4C5359;
-  border-bottom: 2px solid #F28599;
+  border-bottom: 2px solid #D87581;
   padding-bottom: 0.25rem;
   display: inline-block;
 }
