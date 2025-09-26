@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Montserrat',sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .app-container h1 {
@@ -14,9 +14,48 @@
 
 .recipes-grid {
   display: grid;
-  /* Cria 3 colunas de tamanho igual, com um mínimo de 300px */
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem; /* Espaçamento entre os cards */
+  gap: 2rem;
+}
+
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.search-input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #F28599;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.sort-controls select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 1rem;
+}
+.sort-controls select:focus {
+  outline: none;
+  border-color: #F28599;
 }
 
 .pagination {
@@ -65,6 +104,10 @@
 @media (max-width: 768px) {
   .recipes-grid {
     grid-template-columns: 1fr;
+  }
+  .controls-container {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

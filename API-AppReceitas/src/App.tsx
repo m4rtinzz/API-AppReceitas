@@ -46,40 +46,58 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const RECIPES_PER_PAGE = 6;
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
+        setError(null);
         setLoading(true);
-        // A API dummyjson não tem paginação nativa, então buscamos tudo e paginamos no cliente.
-        // O parâmetro 'limit=0' busca todos os itens.
-        const response = await fetch('https://dummyjson.com/recipes?limit=0');
+
+        const skip = (currentPage - 1) * RECIPES_PER_PAGE;
+        let url = "";
+
+        // A API usa um endpoint diferente para busca
+        if (searchQuery) {
+          url = `https://dummyjson.com/recipes/search?q=${searchQuery}&limit=${RECIPES_PER_PAGE}&skip=${skip}&sortBy=${sortBy}&order=${sortOrder}`;
+        } else {
+          url = `https://dummyjson.com/recipes?limit=${RECIPES_PER_PAGE}&skip=${skip}&sortBy=${sortBy}&order=${sortOrder}`;
+        }
+
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         setRecipes(data.recipes);
+        setTotalPages(Math.ceil(data.total / RECIPES_PER_PAGE));
+
       } catch (e) {
         if (e instanceof Error) {
           setError(e.message);
         } else {
           setError("Ocorreu um erro desconhecido");
         }
+        setRecipes([]); // Limpa receitas em caso de erro
+        setTotalPages(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRecipes();
-  }, []); // Array vazio significa que o efeito roda apenas uma vez, no 'mount' do componente.
+  }, [currentPage, searchQuery, sortBy, sortOrder]); // Roda o efeito quando qualquer um destes estados mudar
 
-  // Lógica de Paginação
-  const indexOfLastRecipe = currentPage * RECIPES_PER_PAGE;
-  const indexOfFirstRecipe = indexOfLastRecipe - RECIPES_PER_PAGE;
-  const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
-  const totalPages = Math.ceil(recipes.length / RECIPES_PER_PAGE);
+  // Reseta a página para 1 quando uma nova busca é feita
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   if (loading) return <div className="status-message">Carregando receitas...</div>;
   if (error) return <div className="status-message error">Erro: {error}</div>;
@@ -87,16 +105,41 @@ function App() {
   return (
     <div className="app-container">
       <h1>Receitas Yummy</h1>
+
+      <div className="controls-container">
+        <input
+          type="text"
+          placeholder="Buscar por nome da receita..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="search-input"
+        />
+        <div className="sort-controls">
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="name">Nome</option>
+            <option value="rating">Nota</option>
+            <option value="difficulty">Dificuldade</option>
+          </select>
+          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
+      </div>
+
       <div className="recipes-grid">
-        {currentRecipes.map((recipe) => (
+        {recipes.length > 0 ? recipes.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
+        )) : <p className="status-message">Nenhuma receita encontrada.</p>}
       </div>
-      <div className="pagination">
-        <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>Anterior</button>
-        <span>Página {currentPage} de {totalPages}</span>
-        <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</button>
-      </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>Anterior</button>
+          <span>Página {currentPage} de {totalPages}</span>
+          <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</button>
+        </div>
+      )}
     </div>
   )
 }
