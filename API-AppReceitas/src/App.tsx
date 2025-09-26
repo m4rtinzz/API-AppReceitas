@@ -100,7 +100,7 @@ function App() {
     const fetchRecipes = async () => {
       try {
         setError(null);
-        setLoading(true);
+        setLoading(false);
 
         const skip = (currentPage - 1) * RECIPES_PER_PAGE;
         let url = "";
