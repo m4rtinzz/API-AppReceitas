@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import logo from './assets/icon-receitas.png';
 
 interface Recipe {
   id: number;
@@ -12,15 +13,18 @@ interface Recipe {
   caloriesPerServing: number;
   rating: number;
   difficulty: string;
+  ingredients: string[];
+  instructions: string[];
 }
 
 interface RecipeCardProps {
   recipe: Recipe;
+  onCardClick: (recipe: Recipe) => void;
 }
 
-function RecipeCard({ recipe }: RecipeCardProps) {
+function RecipeCard({ recipe, onCardClick }: RecipeCardProps) {
   return (
-    <div className="recipe-card">
+    <div className="recipe-card" onClick={() => onCardClick(recipe)}>
       <img src={recipe.image} alt={recipe.name} className="recipe-image" />
       <div className="recipe-content">
         <span className="recipe-type">{recipe.mealType.join(', ')}</span>
@@ -40,7 +44,45 @@ function RecipeCard({ recipe }: RecipeCardProps) {
   );
 }
 
-// 3. Componente principal App
+interface RecipeDetailProps {
+  recipe: Recipe;
+  onClose: () => void;
+}
+
+function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close-button" onClick={onClose}>&times;</button>
+        <img src={recipe.image} alt={recipe.name} className="modal-image" />
+        <h2>{recipe.name}</h2>
+        <div className="modal-details-grid">
+          <span><strong>Dificuldade:</strong> {recipe.difficulty}</span>
+          <span><strong>Preparo:</strong> {recipe.prepTimeMinutes} min</span>
+          <span><strong>Cozimento:</strong> {recipe.cookTimeMinutes} min</span>
+          <span><strong>Nota:</strong> {recipe.rating.toFixed(1)} ⭐</span>
+        </div>
+        <div className="modal-section">
+          <h3>Ingredientes</h3>
+          <ul>
+            {recipe.ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="modal-section">
+          <h3>Instruções</h3>
+          <ol>
+            {recipe.instructions.map((instruction, index) => (
+              <li key={index}>{instruction}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +92,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const RECIPES_PER_PAGE = 6;
 
@@ -104,7 +147,8 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>Receitas Yummy</h1>
+      <img src={logo} alt="Logo Receitas Yummy" className="app-logo" title="Receitas Yummy"/>
+      <h1 className="app-title">Receitas Yummy</h1>
 
       <div className="controls-container">
         <input
@@ -129,7 +173,7 @@ function App() {
 
       <div className="recipes-grid">
         {recipes.length > 0 ? recipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+          <RecipeCard key={recipe.id} recipe={recipe} onCardClick={setSelectedRecipe} />
         )) : <p className="status-message">Nenhuma receita encontrada.</p>}
       </div>
 
@@ -139,6 +183,10 @@ function App() {
           <span>Página {currentPage} de {totalPages}</span>
           <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</button>
         </div>
+      )}
+
+      {selectedRecipe && (
+        <RecipeDetail recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
       )}
     </div>
   )
